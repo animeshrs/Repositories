@@ -2,6 +2,7 @@
 
 import { observer } from "mobx-react-lite";
 import { SyntheticEvent, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { Button, ButtonGroup, Item, Label, Segment } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 
@@ -38,9 +39,10 @@ const ActivityList = () => {
 							<Item.Extra>
 								<ButtonGroup floated="right" widths="2">
 									<Button
+										as={NavLink}
+										to={`/activities/${activity.id}`}
 										widths="1"
 										basic
-										onClick={() => activityStore.selectActivity(activity.id)}
 										content="View"
 										color="blue"
 									/>
