@@ -8,6 +8,7 @@ interface Props {
 	placeholder: string;
 	name: string;
 	label?: string;
+	type?: string;
 }
 
 function MyTextInput(props: Props) {
