@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Activities;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -20,8 +21,10 @@ public class Details
     {
         private readonly DataContext _context;
         private readonly IMapper _iMapper;
-        public Handler(DataContext context, IMapper iMapper)
+        private readonly IUserAccessor _userAccessor;
+        public Handler(DataContext context, IMapper iMapper, IUserAccessor userAccessor)
         {
+            _userAccessor = userAccessor;
             _iMapper = iMapper;
             _context = context;
         }
@@ -29,7 +32,8 @@ public class Details
         public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var activity = await _context.Activities
-            .ProjectTo<ActivityDto>(_iMapper.ConfigurationProvider)
+            .ProjectTo<ActivityDto>(_iMapper.ConfigurationProvider,
+            new { currentUsername = _userAccessor.GetUsername() })
             .FirstOrDefaultAsync(x => x.Id == request.Id);
             return Result<ActivityDto>.Success(activity);
         }

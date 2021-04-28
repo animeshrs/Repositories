@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Persistence;
 using AutoMapper.QueryableExtensions;
+using Application.Interfaces;
 
 namespace Application.Activities
 {
@@ -20,9 +21,12 @@ namespace Application.Activities
             private readonly DataContext _context;
             private readonly ILogger<List> _logger;
             private readonly IMapper _iMapper;
+            private readonly IUserAccessor _userAccessor;
 
-            public Handler(DataContext context, ILogger<List> logger, IMapper iMapper)
+            public Handler(DataContext context, ILogger<List> logger, IMapper iMapper,
+            IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _iMapper = iMapper;
                 _logger = logger;
                 _context = context;
@@ -33,7 +37,8 @@ namespace Application.Activities
                 _logger.LogWarning("List of Activities requested");
 
                 var activities = await _context.Activities
-                .ProjectTo<ActivityDto>(_iMapper.ConfigurationProvider)
+                .ProjectTo<ActivityDto>(_iMapper.ConfigurationProvider,
+                 new { currentUsername = _userAccessor.GetUsername() })
                 .ToListAsync(cancellationToken);
 
                 return Result<List<ActivityDto>>.Success(activities);
